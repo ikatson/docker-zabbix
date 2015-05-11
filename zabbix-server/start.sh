@@ -36,6 +36,7 @@ DBName=${PGDATABASE}
 DBUser=${PGUSER}
 DBPassword=${PGPASSWORD}
 LogFile=/var/log/zabbix-server/zabbix.log
+AlertScriptsPath=/etc/zabbix/alert.d/
 EOF
 }
 
