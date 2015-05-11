@@ -35,14 +35,17 @@ DBPort=${PGPORT}
 DBName=${PGDATABASE}
 DBUser=${PGUSER}
 DBPassword=${PGPASSWORD}
+LogFile=/var/log/zabbix-server/zabbix.log
 EOF
 }
 
 function start_server () {
     echo "Starting zabbix server in foreground..."
     echo "Starting zabbix agent in foreground..."
+    install -o zabbix -g zabbix -d /var/log/zabbix-server
     zabbix_server &
     zabbix_agentd &
+    tail -F /var/log/zabbix-server/zabbix.log &
     while ps aux | awk '$11 == "zabbix_server"' > /dev/null; do
         sleep 1
     done
