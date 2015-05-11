@@ -14,7 +14,7 @@ export ZABBIX_SERVER_HOST="${ZABBIX_SERVER_HOST:-zabbix-server}"
 set -e
 
 function zabbix_check_db_accessible () {
-    psql -c 'select 1' > /dev/null
+    psql -c 'select 1' | grep 1 > /dev/null
 }
 
 function zabbix_frontend_write_config () {

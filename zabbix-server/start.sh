@@ -12,11 +12,11 @@ export PGHOST="${PGHOST:-$( echo "${PG_PORT_5432_TCP_ADDR:-127.0.0.1}" )}"
 set -e
 
 function zabbix_check_db_accessible () {
-    psql -c 'select 1' > /dev/null
+    psql -c 'select 1' | grep 1 > /dev/null
 }
 
 function zabbix_check_db_initialized () {
-    psql -c "select relname from pg_class where relname = 'hosts'" > /dev/null
+    psql -c "select 'yes' from pg_class where relname = 'hosts'" | grep yes > /dev/null
 }
 
 function zabbix_initialize_db () {
@@ -28,7 +28,7 @@ function zabbix_initialize_db () {
     done
 }
 
-function zabbix_write_config () {
+function zabbix_write_configs () {
     cat > /etc/zabbix/zabbix_server.conf <<EOF
 DBHost=${PGHOST}
 DBPort=${PGPORT}
@@ -39,8 +39,10 @@ EOF
 }
 
 function start_server () {
-    zabbix_server &
     echo "Starting zabbix server in foreground..."
+    echo "Starting zabbix agent in foreground..."
+    zabbix_server &
+    zabbix_agentd &
     while ps aux | awk '$11 == "zabbix_server"' > /dev/null; do
         sleep 1
     done
@@ -54,7 +56,7 @@ function main () {
         exit 1
     }
     zabbix_check_db_initialized || zabbix_initialize_db
-    zabbix_write_config
+    zabbix_write_configs
     if [[ ! "$1" ]]; then
         start_server
         exit $?

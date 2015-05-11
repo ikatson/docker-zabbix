@@ -2,7 +2,9 @@ FROM ubuntu:14.04
 
 ENV DEBIAN_FRONTEND=noninteractive
 
-RUN apt-get update && apt-get install -y zabbix-server-pgsql postgresql-client python
+RUN apt-get update && apt-get install --no-install-recommends -y zabbix-server-pgsql postgresql-client zabbix-agent python
+
+RUN install -o zabbix -g zabbix -d /var/run/zabbix/
 
 EXPOSE 10051
 
